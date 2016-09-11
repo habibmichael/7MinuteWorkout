@@ -7,13 +7,26 @@
 
 angular.module('7MinWorkout').controller('WorkoutController',['$scope','$interval',
                 function($scope,$interval){
+                    /*
+                    $scope.$watch('currentExerciseDuration',function(nVal){
+                        if(nVal==$scope.currentExercise.duration){
+                            var next = getNextExercise($scope.currentExercise);
+                            if(next){
+                                startExercise(next);
+                            } else{
+                                console.log("Workout complete!")
+                            }
+                        }
+                    });
+                    */
+
                     function WorkoutPlan(args){
 
-                        this.exercise = [];
+                        this.exercises = [];
                         this.name = args.name;
                         this.title = args.title;
                         this.restBetweenExercise = args.restBetweenExercise;
-                    };
+                    }
 
                     function Exercise(args){
                         this.name = args.name;
@@ -45,14 +58,9 @@ angular.module('7MinWorkout').controller('WorkoutController',['$scope','$interva
                         startExercise(workoutPlan.exercises.shift());
                     };
 
-                    var startExercise = function(exercisePlan){
-                        $scope.currentExercise = exercisePlan;
-                        $scope.currentExerciseDuration = 0;
-                        $interval(function(){
-                            ++$scope.currentExerciseDuration;
-                        },1000,$scope.currentExercise.duration);
+                    var init = function(){
+                        startWorkout();
                     };
-
 
                     var createWorkout = function(){
                         var workout = new WorkoutPlan({
@@ -229,14 +237,41 @@ angular.module('7MinWorkout').controller('WorkoutController',['$scope','$interva
                         });
 
                         return workout;
-                    }
-
-
-
-                    var init = function(){
-                        startWorkout();
                     };
+
+                    var startExercise = function(exercisePlan){
+                        $scope.currentExercise = exercisePlan;
+                        $scope.currentExerciseDuration = 0;
+                        $interval(function(){
+                            ++$scope.currentExerciseDuration;
+                        },1000,$scope.currentExercise.duration)
+                            .then(function(){
+                                var next = getNextExercise(exercisePlan);
+                                if(next){
+                                    startExercise(next);
+                                }
+                                else {
+                                    console.log("workout Complete")
+                                }
+                            });
+                    };
+
+                    var getNextExercise = function(currentExercisePlan){
+                        var nextExercise = null;
+                        if(currentExercisePlan===restExercise){
+                            nextExercise = workoutplan.exercises.shift();
+
+                        } else {
+                            if(workoutPlan.exercises.length!=0){
+                                nextExercise = restExercise;
+                            }
+                        }
+                        return nextExercise;
+                    };
+
                     init();
+
+
 
 
 
