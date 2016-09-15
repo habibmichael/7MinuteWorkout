@@ -35,7 +35,7 @@ angular.module('7MinWorkout').controller('WorkoutController',['$scope','$interva
                             angular.forEach(this.exercises,function (exercise) {
                                 total = total + exercise.duration;
                             });
-                            return this.restBetweenExercise *(this.exercise.length-1)+total;
+                            return this.restBetweenExercise *(this.exercises.length-1)+total;
 
                             };
                         }
